@@ -26,7 +26,7 @@ public class Rope : MonoBehaviour
         ResetLength();
     }
 
-    void ResetLength()
+    public void ResetLength()
     {
         foreach (GameObject segment in ropeSegments)
         {
@@ -41,7 +41,7 @@ public class Rope : MonoBehaviour
 
     void CreateRopeSegment()
     {
-        GameObject segment = (GameObject)Instantiate(ropeSegmentPrefab, this.transform.position, Quaternion.identity);
+        GameObject segment = Instantiate(ropeSegmentPrefab, this.transform.position, Quaternion.identity);
         segment.transform.SetParent(this.transform, true);
         Rigidbody2D segmentBody = segment.GetComponent<Rigidbody2D>();
         SpringJoint2D segmentJoint = segment.GetComponent<SpringJoint2D>();

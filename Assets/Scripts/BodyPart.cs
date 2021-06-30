@@ -24,7 +24,7 @@ public class BodyPart : MonoBehaviour
 
     public void Update()
     {
-        if (detached)
+        if (!detached)
         {
             return;
         }

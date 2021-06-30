@@ -44,7 +44,8 @@ public class Gnome : MonoBehaviour
                 if (_isHoldingTreasure)
                 {
                     holdingArm.sprite = armHoldingTreasure;
-                } else
+                }
+                else
                 {
                     holdingArm.sprite = armHoldingEmpty;
                 }
@@ -71,7 +72,7 @@ public class Gnome : MonoBehaviour
                 }
                 break;
             case DamageType.Slicing:
-                if(deathPrefab != null)
+                if (deathPrefab != null)
                 {
                     Instantiate(
                         deathPrefab, cameraFollowTarget.position, cameraFollowTarget.rotation
@@ -81,12 +82,12 @@ public class Gnome : MonoBehaviour
         }
     }
 
-    public void DesrtoyGnome(DamageType type)
+    public void DestroyGnome(DamageType type)
     {
         _isDead = true;
         isHoldingTreasure = false;
 
-        foreach(BodyPart part in GetComponentsInChildren<BodyPart>())
+        foreach (BodyPart part in GetComponentsInChildren<BodyPart>())
         {
             switch (type)
             {
@@ -108,7 +109,51 @@ public class Gnome : MonoBehaviour
             if (shouldDetach)
             {
                 part.Detach();
+
+                if (type == DamageType.Slicing)
+                {
+                    if (part.bloodFountainOrigin != null && bloodFountainPrefab != null)
+                    {
+                        GameObject fountain = Instantiate(
+                            bloodFountainPrefab,
+                            part.bloodFountainOrigin.position,
+                            part.bloodFountainOrigin.rotation
+                            ) as GameObject;
+
+                        fountain.transform.SetParent(
+                            this.cameraFollowTarget,
+                            false
+                            );
+                    }
+                }
+            }
+
+            var allJoints = part.GetComponentsInChildren<Joint2D>();
+            foreach (Joint2D joint in allJoints)
+            {
+                Destroy(joint);
             }
         }
+        var remove = gameObject.AddComponent<RemoveAfterDelay>();
+        remove.delay = delayBeforeRemoving;
+        StartCoroutine(ReleaseGhost());
+    }
+
+    IEnumerator ReleaseGhost()
+    {
+        if(ghostPrefab == null)
+        {
+            yield break;
+        }
+
+        yield return new WaitForSeconds(delayBeforeReleasingGhost);
+
+        Instantiate(
+            ghostPrefab,
+            transform.position,
+            Quaternion.identity
+            );
     }
 }
+
+    
